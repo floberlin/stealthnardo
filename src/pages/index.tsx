@@ -1,4 +1,4 @@
-import { Box, InputGroup, InputRightAddon, Text } from '@chakra-ui/react'
+import { Box, Flex, InputGroup, InputRightAddon, Text } from '@chakra-ui/react'
 import { Head } from 'components/layout/Head'
 import { HeadingComponent } from 'components/layout/HeadingComponent'
 import { LinkComponent } from 'components/layout/LinkComponent'
@@ -11,6 +11,7 @@ import { Button, ButtonGroup } from '@chakra-ui/react'
 export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
   const [pinInput, setPinInput] = useState('')
+  const [ethAmount, setEthAmount] = useState('')
 
   useEffect(() => {
     const stealthPin = localStorage.getItem(LocalStorageKey.StealthPin)
@@ -30,6 +31,12 @@ export default function Home() {
     setPinInput('')
   }
 
+  function onAnonEth() {
+    if (!ethAmount) return
+
+    console.log('NOT IMPLEMENTED')
+  }
+
   return (
     <>
       <Head />
@@ -44,6 +51,7 @@ export default function Home() {
               <Input type="number" placeholder="Enter Pin" value={pinInput} onChange={(e) => setPinInput(e.target.value)} />
               <InputRightAddon>#</InputRightAddon>
             </InputGroup>
+
             <Button colorScheme="blue" mt={4} onClick={onUsePin}>
               Use Pin
             </Button>
@@ -53,12 +61,18 @@ export default function Home() {
         {stealthPin && (
           <Box mx="auto" width={'50vw'} mt={8}>
             <InputGroup>
-              <Input type="number" placeholder="Send Eth" />
+              <Input type="number" placeholder="Eth Amount" value={ethAmount} onChange={(e) => setEthAmount(e.target.value)} />
               <InputRightAddon>ETH</InputRightAddon>
             </InputGroup>
-            <Button colorScheme="blue" mt={4} onClick={onResetPin}>
-              Reset Pin
-            </Button>
+
+            <Flex justifyContent={'space-between'} mt={4}>
+              <Button colorScheme="blue" onClick={onAnonEth}>
+                Anonymize Eth
+              </Button>
+              <Button colorScheme="gray" onClick={onResetPin}>
+                Reset Pin
+              </Button>
+            </Flex>
           </Box>
         )}
 
