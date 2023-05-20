@@ -31,4 +31,8 @@ contract StealthRegistry {
     keys[msg.sender][1] = _viewPub;
     emit StealthKeyRegistered(msg.sender, _spendPub, _viewPub);
   }
+
+  function checkValidAndRegistered(address _spendPub, address _viewPub) external view returns (bool) {
+    return keys[msg.sender][0] == _spendPub && keys[msg.sender][1] == _viewPub;
+  }
 }
