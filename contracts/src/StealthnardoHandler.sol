@@ -24,20 +24,20 @@ contract StealthHandler {
     require(sent, 'Failed to send Ether');
   }
  
-  function transferAndStakeAndAnnounce(address recipient, bytes memory ephemeralPubKey, bytes memory metadata) external payable {
-    uint256 txvalue;
-    if (messenger.balanceOf(msg.sender) == 0) {
-      require(msg.value >= 0.001 ether, 'not enough ETH');
-      messenger.addStake{value: 0.001 ether}(msg.sender);
-      txvalue = msg.value - 0.001 ether;
-    } else {
-      txvalue = msg.value;
-    }
+  // function transferAndStakeAndAnnounce(address recipient, bytes memory ephemeralPubKey, bytes memory metadata) external payable {
+  //   uint256 txvalue;
+  //   if (messenger.balanceOf(msg.sender) == 0) {
+  //     require(msg.value >= 0.001 ether, 'not enough ETH');
+  //     messenger.addStake{value: 0.001 ether}(msg.sender);
+  //     txvalue = msg.value - 0.001 ether;
+  //   } else {
+  //     txvalue = msg.value;
+  //   }
 
-    messenger.announce(1, recipient, ephemeralPubKey, metadata);
-    (bool sent, ) = recipient.call{value: txvalue}('');
-    require(sent, 'Failed to send Ether');
-  }
+  //   messenger.announce(1, recipient, ephemeralPubKey, metadata);
+  //   (bool sent, ) = recipient.call{value: txvalue}('');
+  //   require(sent, 'Failed to send Ether');
+  // }
 
   function secureTransferAndAnnounce(
     address recipient,
