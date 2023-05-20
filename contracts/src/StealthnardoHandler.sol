@@ -8,6 +8,8 @@ contract StealthHandler {
   IERC5564Messenger messenger;
   PublicStealthEscrow escrow;
 
+  uint256[] public HashedStealthAddresses;
+
   mapping(address => uint256) public escrowFunding;
 
   constructor(address payable messengerAddress, address payable escrowAddress) {
@@ -21,7 +23,7 @@ contract StealthHandler {
     (bool sent, ) = recipient.call{value: msg.value}('');
     require(sent, 'Failed to send Ether');
   }
-
+ 
   function transferAndStakeAndAnnounce(address recipient, bytes memory ephemeralPubKey, bytes memory metadata) external payable {
     uint256 txvalue;
     if (messenger.balanceOf(msg.sender) == 0) {
