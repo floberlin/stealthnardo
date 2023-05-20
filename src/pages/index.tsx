@@ -1,29 +1,46 @@
-import { Box, Flex, InputGroup, InputRightAddon, Text } from '@chakra-ui/react'
+import { Box, Button, Center, Flex, Input, InputGroup, InputRightAddon, Text } from '@chakra-ui/react'
 import { Head } from 'components/layout/Head'
 import { HeadingComponent } from 'components/layout/HeadingComponent'
-import { LinkComponent } from 'components/layout/LinkComponent'
-import { SITE_DESCRIPTION } from 'utils/config'
-import { Input } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
+import { SITE_DESCRIPTION } from 'utils/config'
 import { LocalStorageKey } from 'utils/localstorage'
-import { Button, ButtonGroup } from '@chakra-ui/react'
+import { utf8ToHex } from 'utils/web3'
+import { useAccount, useSignMessage } from 'wagmi'
 
 export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
   const [pinInput, setPinInput] = useState('')
   const [ethAmount, setEthAmount] = useState('')
 
+  const { address } = useAccount()
+  const { data, isError, isLoading, isSuccess, signMessageAsync } = useSignMessage()
+
   useEffect(() => {
     const stealthPin = localStorage.getItem(LocalStorageKey.StealthPin)
     if (stealthPin) setStealthPin(stealthPin)
   }, [])
 
-  function onUsePin() {
-    if (!pinInput) return
+  async function onUsePin() {
+    if (!pinInput || !address) return
+
+    const hex = '0x' + utf8ToHex(pinInput).slice(2)
+    const signedTx = await signMessageAsync({ message: hex })
+
+    console.log('utf8ToHex(pinInput)', utf8ToHex(pinInput))
+    console.log('signedTx', signedTx)
 
     localStorage.setItem(LocalStorageKey.StealthPin, pinInput)
     setStealthPin(pinInput)
   }
+
+  // const prevAddress = useRef(address)
+  // useEffect(() => {
+  //   if (prevAddress.current && !address) {
+  //     return onResetPin()
+  //   }
+
+  //   prevAddress.current = address
+  // }, [address])
 
   function onResetPin() {
     localStorage.removeItem(LocalStorageKey.StealthPin)
@@ -44,7 +61,13 @@ export default function Home() {
       <main>
         <HeadingComponent as="h2">{SITE_DESCRIPTION}</HeadingComponent>
 
-        {!stealthPin && (
+        {!address && (
+          <Box mx="auto" width={'50vw'} mt={8}>
+            <Center>Please log in with your wallet 🪪</Center>
+          </Box>
+        )}
+
+        {address && !stealthPin && (
           <Box mx="auto" width={'50vw'} mt={8}>
             <Text>No setup found. Start with a pin but pls don&apos;t forget it 👀</Text>
             <InputGroup mt={4}>
@@ -58,7 +81,7 @@ export default function Home() {
           </Box>
         )}
 
-        {stealthPin && (
+        {address && stealthPin && (
           <Box mx="auto" width={'50vw'} mt={8}>
             <InputGroup>
               <Input type="number" placeholder="Eth Amount" value={ethAmount} onChange={(e) => setEthAmount(e.target.value)} />
