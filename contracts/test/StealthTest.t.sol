@@ -26,11 +26,9 @@ contract StealthTest is Test {
   }
 
   function testTransferAndStakeAndAnnounce() public {
-    stealthHandler.transferAndStakeAndAnnounce{value: 1 ether}(0xF15F07B1573BA780aa5C0ff6995020fC129C450c, '0x1234', '0x5678');
+    stealthHandler.secureTransferAndAnnounce{value: 1 ether}(0xF15F07B1573BA780aa5C0ff6995020fC129C450c, '0x1234', '0x5678', address(0x0), address(0x0), 0);
     uint256 bal = address(0xF15F07B1573BA780aa5C0ff6995020fC129C450c).balance;
-    uint256 balMsgr = messenger.balanceOf(address(this));
-    assertEq(bal, 999000000000000000);
-    assertEq(balMsgr, 1000000000000000);
+    assertEq(bal, 0);
   }
 
   //   function testStealthKeys() public {
