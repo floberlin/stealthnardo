@@ -1,8 +1,9 @@
 import { Box, Button, Center, Flex, Input, InputGroup, InputRightAddon, Text } from '@chakra-ui/react'
 import { Head } from 'components/layout/Head'
 import { HeadingComponent } from 'components/layout/HeadingComponent'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { SITE_DESCRIPTION } from 'utils/config'
+import { registryContract } from 'utils/contracts'
 import { LocalStorageKey } from 'utils/localstorage'
 import { generateStealthMetaAddress, utf8ToHex } from 'utils/web3'
 import { useAccount, useSignMessage } from 'wagmi'
@@ -11,6 +12,7 @@ export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
   const [pinInput, setPinInput] = useState('')
   const [ethAmount, setEthAmount] = useState('')
+  const [stealthMetaAddress, setStealthMetaAddress] = useState('')
 
   const { address } = useAccount()
   const { data, isError, isLoading, isSuccess, signMessageAsync } = useSignMessage()
@@ -33,9 +35,22 @@ export default function Home() {
 
     console.log({ spendingPrivateKey, viewingPrivateKey, spendingPublicKey, viewingPublicKey, stealthMetaAddress })
 
+    await registryContract.register(address, spendingPublicKey, viewingPublicKey)
+
     localStorage.setItem(LocalStorageKey.StealthPin, pinInput)
     setStealthPin(pinInput)
   }
+
+  const calledRegistry = useRef('')
+  useEffect(() => {
+    if (address && calledRegistry.current !== address) {
+      calledRegistry.current = address
+      ;(async () => {
+        const stealthAddress = await registryContract.getMeta(address)
+        if (stealthAddress) setStealthMetaAddress(stealthAddress)
+      })()
+    }
+  }, [address])
 
   // const prevAddress = useRef(address)
   // useEffect(() => {
