@@ -2,9 +2,10 @@ import { ThemingProps } from '@chakra-ui/react'
 import { mainnet, sepolia, polygon, optimism, arbitrum } from '@wagmi/chains'
 import { Chain } from 'viem'
 
-export const SITE_NAME = 'Nexth'
-export const SITE_DESCRIPTION = 'Next.js + Ethereum starter kit'
-export const SITE_URL = 'https://nexth.vercel.app'
+export const SITE_NAME = 'Stealthnardo'
+export const SITE_DESCRIPTION = 'Anonymize your Eth!'
+export const SITE_FOOTER = 'Made for EthDam by '
+export const SITE_URL = 'https://stealthnardo.vercel.app'
 
 export const THEME_INITIAL_COLOR = 'system'
 export const THEME_COLOR_SCHEME: ThemingProps['colorScheme'] = 'gray'
