@@ -4,7 +4,7 @@ import { HeadingComponent } from 'components/layout/HeadingComponent'
 import { useEffect, useState } from 'react'
 import { SITE_DESCRIPTION } from 'utils/config'
 import { LocalStorageKey } from 'utils/localstorage'
-import { utf8ToHex } from 'utils/web3'
+import { generateStealthMetaAddress, utf8ToHex } from 'utils/web3'
 import { useAccount, useSignMessage } from 'wagmi'
 
 export default function Home() {
@@ -28,6 +28,10 @@ export default function Home() {
 
     console.log('utf8ToHex(pinInput)', utf8ToHex(pinInput))
     console.log('signedTx', signedTx)
+
+    const { spendingPrivateKey, viewingPrivateKey, spendingPublicKey, viewingPublicKey, stealthMetaAddress } = generateStealthMetaAddress(signedTx)
+
+    console.log({ spendingPrivateKey, viewingPrivateKey, spendingPublicKey, viewingPublicKey, stealthMetaAddress })
 
     localStorage.setItem(LocalStorageKey.StealthPin, pinInput)
     setStealthPin(pinInput)
