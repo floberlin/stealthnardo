@@ -179,7 +179,7 @@ export default function Home() {
 
             {stealthPin && (
               <p>
-                Your stealth meta address is: <b>{stealthMetaInfo}</b>
+                Your stealth meta address is: <b>{stealthMetaInfo.stealthMetaAddress}</b>
               </p>
             )}
 
