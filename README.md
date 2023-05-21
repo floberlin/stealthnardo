@@ -29,7 +29,10 @@ https://stealthsend.vercel.app
 
 # Contracts
 Deployed Contracts on Scroll:
+
 Messenger (ERC-5564): 0xff50dd1c91503764dced165c528497b181517976
+
 Registry(based on ERC-6538): 0x3e23079170caeb67653e0e514a5b911193e61c70
+
 Handler (for the actual transfer of ETH): 0xf6e6ce97d2e1c9fc78e0973b72808b1f7c3eae72
 
