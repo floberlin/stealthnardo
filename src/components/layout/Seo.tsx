@@ -1,5 +1,5 @@
 import React from 'react'
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, SOCIAL_TWITTER } from 'utils/config'
+import {  SITE_NAME, SITE_URL, SOCIAL_TWITTER } from 'utils/config'
 import { DefaultSeo } from 'next-seo'
 
 export function Seo() {
@@ -10,7 +10,6 @@ export function Seo() {
       title={SITE_NAME}
       defaultTitle={SITE_NAME}
       titleTemplate={`%s | ${SITE_NAME}`}
-      description={SITE_DESCRIPTION}
       defaultOpenGraphImageWidth={1200}
       defaultOpenGraphImageHeight={630}
       openGraph={{

@@ -21,7 +21,7 @@ export default function Home() {
   const [col2, setCol2] = useState('red')
 
   const [inputMetaAddr, setinputMetaAddr] = useState('')
-  const [stealthMetaInfo, setStealthMetaInfo] = useState('')
+  const [stealthMetaInfo, setStealthMetaInfo] = useState<any>()
 
   const { address } = useAccount()
   const { data: walletClient } = useWalletClient()
@@ -109,7 +109,7 @@ export default function Home() {
       localStorage.setItem(LocalStorageKey.StealthMetaInfoAddress, JSON.stringify(stealthInfo))
 
       setStealthPin(pinInput)
-      setStealthMetaInfo(stealthMetaInfo)
+      setStealthMetaInfo(stealthInfo)
     } catch (err: any) {
       console.error(`Error onUsePin: ${err.message}`)
     }
@@ -179,7 +179,7 @@ export default function Home() {
 
             {stealthPin && (
               <p>
-                Your stealth meta address is: <b>{stealthMetaInfo.stealthMetaAddress}</b>
+                Your stealth meta address is: <b>{stealthMetaInfo}</b>
               </p>
             )}
 
