@@ -2,8 +2,8 @@ import { ThemingProps } from '@chakra-ui/react'
 import { mainnet, sepolia, polygon, optimism, arbitrum } from '@wagmi/chains'
 import { Chain } from 'viem'
 
-export const SITE_NAME = 'stealthsend'
-export const SITE_DESCRIPTION = 'Stealthanize your Eth!'
+export const SITE_NAME = 'StealthSend'
+//export const SITE_DESCRIPTION = 'Stealthanize your ETH transfers!'
 export const SITE_FOOTER = 'Made for EthDam by'
 export const SITE_URL = 'https://stealthsend.vercel.app'
 

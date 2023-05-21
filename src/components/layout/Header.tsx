@@ -5,6 +5,7 @@ import { LinkComponent } from './LinkComponent'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { PassportScore } from './PassportScore'
 import { Web3Button } from '@web3modal/react'
+import Image from 'next/image'
 
 interface Props {
   className?: string
@@ -17,7 +18,8 @@ export function Header(props: Props) {
     <Flex as="header" className={className} bg={useColorModeValue('gray.100', 'gray.900')} px={4} py={2} mb={8} alignItems="center">
       <LinkComponent href="/">
         <Heading as="h1" size="md">
-          {SITE_NAME}
+      
+            <Image src="/logoS.png" alt={SITE_NAME} width={250} height={450} />
         </Heading>
       </LinkComponent>
 

@@ -38,6 +38,16 @@ export default function Home() {
     hash: data?.hash,
   })
 
+  // const { data:regData, write:regWrite  } = useContractWrite({
+  //   address: stealthRegistry,
+  //   abi: stealthRegistryArtifact.abi,
+  //   functionName: 'registerKey',
+  // })
+  // if (data?.hash) console.log(data.hash)
+  // const { isLoading, isSuccess } = useWaitForTransaction({
+  //   hash: data?.hash,
+  // })
+
   async function onUsePin() {
     if (!pinInput || !address || !walletClient || !write) return
 
@@ -49,10 +59,6 @@ export default function Home() {
       console.log('signedTx', signedTx)
 
       const stealthInfo = generateStealthMetaAddress(signedTx)
-
-      write({
-        args: [stealthInfo.spendingPublicKey, stealthInfo.viewingPublicKey],
-      })
 
       localStorage.setItem(LocalStorageKey.StealthPin, pinInput)
       localStorage.setItem(LocalStorageKey.StealthMetaInfoAddress, JSON.stringify(stealthInfo))
@@ -91,11 +97,26 @@ export default function Home() {
         {address && (
           <Box mx="auto" width={'50vw'} mt={4}>
             <Box mt={8}>
-              <Text>Receiver actions</Text>
+              <h1>Receiver</h1>
             </Box>
 
+            {stealthPin && (
+              <p>
+                Your stealth meta address is: <b>{stealthMetaInfo.stealthMetaAddress}</b>
+              </p>
+            )}
+
+            <Button
+              onClick={() =>
+                write({
+                  args: [stealthMetaInfo.spendingPublicKey, stealthMetaInfo.viewingPublicKey],
+                })
+              }>
+              Register Stealth Meta Address to Registry
+            </Button>
+
             {!stealthPin && (
-              <Box>
+              <Box alignSelf="center">
                 <Text>No setup found. Start with a pin but pls don&apos;t forget it 👀</Text>
                 <InputGroup mt={4}>
                   <Input type="number" placeholder="Enter Pin" value={pinInput} onChange={(e) => setPinInput(e.target.value)} />
@@ -103,31 +124,30 @@ export default function Home() {
                 </InputGroup>
 
                 <Button colorScheme="blue" mt={4} onClick={onUsePin}>
-                  Use Pin
+                  Create your stealth meta address
                 </Button>
               </Box>
             )}
 
-            {stealthPin && (
-              <Box mx="auto" width={'50vw'} mt={8}>
-                <Button colorScheme="gray" onClick={onResetPin}>
-                  Reset Pin
-                </Button>
-                <Box mt={8}>
-                  <Text>Sender actions</Text>
-                </Box>
+            <Box mx="auto" width={'50vw'} mt={8} margin={''}>
+              <Button colorScheme="gray" onClick={onResetPin}>
+                Reset Pin
+              </Button>
 
-                <InputGroup mt={8}>
-                  <Input type="number" placeholder="Eth Amount" value={ethAmount} onChange={(e) => setEthAmount(e.target.value)} />
-                  <InputRightAddon>ETH</InputRightAddon>
-                </InputGroup>
-                <Flex justifyContent={'space-between'} mt={4}>
-                  <Button colorScheme="blue" onClick={onAnonEth}>
-                    Anonymize Eth
-                  </Button>
-                </Flex>
+              <Box mt={16}>
+                <h1>Sender</h1>
               </Box>
-            )}
+
+              <InputGroup mt={8}>
+                <Input type="number" placeholder="Eth Amount" value={ethAmount} onChange={(e) => setEthAmount(e.target.value)} />
+                <InputRightAddon>ETH</InputRightAddon>
+              </InputGroup>
+              <Flex justifyContent={'space-between'} mt={4}>
+                <Button colorScheme="blue" onClick={onAnonEth}>
+                  Anonymize Eth
+                </Button>
+              </Flex>
+            </Box>
           </Box>
         )}
 
