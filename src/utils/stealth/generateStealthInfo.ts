@@ -1,9 +1,10 @@
+// @ts-nocheck
 import keccak256 from 'js-sha3'
 import secp from '@noble/secp256k1'
 import randomPrivateKey from './randomPrivateKey'
 import toEthAddress from './toEthAddress'
 
-export default function generateStealthInfo(stealthMetaAddress: string, ephemeralPrivateKey: string) {
+export default function generateStealthInfo(stealthMetaAddress: string) {
   //USER = "st:eth:0x03312f36039e1479d10ba17eef98bba5f9a299af277c1dfac2e9134f352892b16603312f36039e1479d10ba17eef98bba5f9a299af277c1dfac2e9134f352892b166";
 
   const USER = stealthMetaAddress
