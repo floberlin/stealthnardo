@@ -1,43 +1,30 @@
-# Nexth
+# StealthSend
 
-A Next.js + Ethereum starter kit to quickly ship Web3 Apps ⚡
+#What is StealthSend?
 
-![Nexth Readme Image](./readme.png)
+StealthSend is a powerful tool that uses stealth addresses to maintain the privacy of blockchain transactions. A stealth meta-address is a public address, containing a spending and viewing key that is derived from a accounts signature and secret. We use the ERC-6538 address registry to map the meta-address to your normal Ethereum address, so you can basically do an easy transfer without remembering any long meta-addresses. Based on elliptic curve cryptography a meta-address resolves to a variety of stealth addresses. So simply put, you can just send your ETH to that one address and it will always be redirected to a bunch of addresses, where the sender will have access to. An external observer will see that a payment has been made to an address but will not be able to identify the address to which it belongs.
 
-## Getting Started 👀
+#Use Cases
 
-Check-out the [example pages](./src/pages/examples/) or [live demo](https://nexth.vercel.app/) to see how you can use this starter kit.
+##DAO Employee Payment
 
-## Features ✅
+In an era where privacy is paramount, StealthSend is an excellent tool for DAOs. DAOs can use StealthSend to pay their employees on a regular basis, ensuring that the payment transactions are anonymous and secure. This allows for the privacy of the DAO members to be maintained.
 
-- [Next.js](https://nextjs.org/docs)
-- [Chakra UI](https://chakra-ui.com/)
-- [viem](https://viem.sh/)
-- [wagmi](https://wagmi.sh/)
-- [Web3Modal SDK from WalletConnect](https://docs.walletconnect.com/)
-- [Sign-In with Ethereum](https://www.login.xyz/)
-- [usehooks-ts](https://usehooks-ts.com/)
-- [next-SEO](https://github.com/garmeeh/next-seo)
+##Charitable Donations
 
-## Developer Experience 🧰
+Another potential use case for StealthSend is in the world of philanthropy. Charitable organisations can use this tool to receive donations privately. 
 
-- [TypeScript](https://www.typescriptlang.org/)
-- [eslint](https://eslint.org/)
-- [prettier](https://prettier.io/)
-- [Husky](https://typicode.github.io/husky/)
+##E-commerce Transactions
 
-## Development 🛠️
+StealthSend can also be used in e-commerce. Buyers can make payments without revealing their personal wallet addresses, thus maintaining their privacy. Sellers, on the other hand, can receive payments without their business wallet addresses being publicly linked to the transactions.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+#Progress
 
-## Deploy on Vercel 🚢
+Unfortunately, we were not able to develop a fully working PoC in time of the hackathon. The registry is working, but we still got some errors trying to generate the stealth address. 
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fwslyvh%2Fnexth)
+https://stealthsend.vercel.app
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=nexth&filter=next.js&utm_source=nexth&utm_campaign=nexth-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Deployed Contracts on Scroll:
+Messenger (ERC-5564): 0xff50dd1c91503764dced165c528497b181517976
+Registry(based on ERC-6538): 0x3e23079170caeb67653e0e514a5b911193e61c70
+Handler (for the actual transfer of ETH): 0xf6e6ce97d2e1c9fc78e0973b72808b1f7c3eae72
