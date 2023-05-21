@@ -2,10 +2,10 @@ import { ThemingProps } from '@chakra-ui/react'
 import { mainnet, sepolia, polygon, optimism, arbitrum } from '@wagmi/chains'
 import { Chain } from 'viem'
 
-export const SITE_NAME = 'Stealtho'
+export const SITE_NAME = 'stealthsend'
 export const SITE_DESCRIPTION = 'Stealthanize your Eth!'
 export const SITE_FOOTER = 'Made for EthDam by'
-export const SITE_URL = 'https://stealthnardo.vercel.app'
+export const SITE_URL = 'https://stealthsend.vercel.app'
 
 export const THEME_INITIAL_COLOR = 'system'
 export const THEME_COLOR_SCHEME: ThemingProps['colorScheme'] = 'gray'

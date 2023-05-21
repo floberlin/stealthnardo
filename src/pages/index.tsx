@@ -6,7 +6,9 @@ import { SITE_DESCRIPTION } from 'utils/config'
 import { stealthRegistryContract } from 'utils/contracts'
 import { LocalStorageKey } from 'utils/localstorage'
 import { generateStealthMetaAddress, utf8ToHex } from 'utils/web3'
-import { useAccount, useSignMessage, useWalletClient } from 'wagmi'
+import { useAccount, useContractWrite, usePrepareContractWrite, useSignMessage, useWaitForTransaction, useWalletClient } from 'wagmi'
+import stealthRegistryArtifact from '../../contracts/out/StealthnardoRegistry.sol/StealthRegistry.json'
+import { stealthRegistry } from '../utils/address'
 
 export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
@@ -26,8 +28,18 @@ export default function Home() {
     if (stealthInfo) setStealthMetaInfo(JSON.parse(stealthInfo))
   }, [])
 
+  const { data, write } = useContractWrite({
+    address: stealthRegistry,
+    abi: stealthRegistryArtifact.abi,
+    functionName: 'registerKey',
+  })
+  if (data?.hash) console.log(data.hash)
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+  })
+
   async function onUsePin() {
-    if (!pinInput || !address || !walletClient) return
+    if (!pinInput || !address || !walletClient || !write) return
 
     try {
       const hex = '0x' + utf8ToHex(pinInput).slice(2)
@@ -38,7 +50,9 @@ export default function Home() {
 
       const stealthInfo = generateStealthMetaAddress(signedTx)
 
-      await stealthRegistryContract.connect(walletClient).registerKey(stealthInfo.spendingPublicKey, stealthInfo.viewingPublicKey)
+      write({
+        args: [stealthInfo.spendingPublicKey, stealthInfo.viewingPublicKey],
+      })
 
       localStorage.setItem(LocalStorageKey.StealthPin, pinInput)
       localStorage.setItem(LocalStorageKey.StealthMetaInfoAddress, JSON.stringify(stealthInfo))
@@ -75,44 +89,48 @@ export default function Home() {
           </Box>
         )}
         {address && (
-          <Box mt={8}>
-            <Text>Receiver actions</Text>
-          </Box>
-        )}
-        {address && !stealthPin && (
           <Box mx="auto" width={'50vw'} mt={4}>
-            <Text>No setup found. Start with a pin but pls don&apos;t forget it 👀</Text>
-            <InputGroup mt={4}>
-              <Input type="number" placeholder="Enter Pin" value={pinInput} onChange={(e) => setPinInput(e.target.value)} />
-              <InputRightAddon>#</InputRightAddon>
-            </InputGroup>
-
-            <Button colorScheme="blue" mt={4} onClick={onUsePin}>
-              Use Pin
-            </Button>
-          </Box>
-        )}
-        {address && stealthPin && (
-          <Box mx="auto" width={'50vw'} mt={8}>
-            <Button colorScheme="gray" onClick={onResetPin}>
-              Reset Pin
-            </Button>
             <Box mt={8}>
-              <Text>Sender actions</Text>
+              <Text>Receiver actions</Text>
             </Box>
 
-            <InputGroup mt={8}>
-              <Input type="number" placeholder="Eth Amount" value={ethAmount} onChange={(e) => setEthAmount(e.target.value)} />
-              <InputRightAddon>ETH</InputRightAddon>
-            </InputGroup>
-            <Flex justifyContent={'space-between'} mt={4}>
-              <Button colorScheme="blue" onClick={onAnonEth}>
-                Anonymize Eth
-              </Button>
-            </Flex>
+            {!stealthPin && (
+              <Box>
+                <Text>No setup found. Start with a pin but pls don&apos;t forget it 👀</Text>
+                <InputGroup mt={4}>
+                  <Input type="number" placeholder="Enter Pin" value={pinInput} onChange={(e) => setPinInput(e.target.value)} />
+                  <InputRightAddon>#</InputRightAddon>
+                </InputGroup>
+
+                <Button colorScheme="blue" mt={4} onClick={onUsePin}>
+                  Use Pin
+                </Button>
+              </Box>
+            )}
+
+            {stealthPin && (
+              <Box mx="auto" width={'50vw'} mt={8}>
+                <Button colorScheme="gray" onClick={onResetPin}>
+                  Reset Pin
+                </Button>
+                <Box mt={8}>
+                  <Text>Sender actions</Text>
+                </Box>
+
+                <InputGroup mt={8}>
+                  <Input type="number" placeholder="Eth Amount" value={ethAmount} onChange={(e) => setEthAmount(e.target.value)} />
+                  <InputRightAddon>ETH</InputRightAddon>
+                </InputGroup>
+                <Flex justifyContent={'space-between'} mt={4}>
+                  <Button colorScheme="blue" onClick={onAnonEth}>
+                    Anonymize Eth
+                  </Button>
+                </Flex>
+              </Box>
+            )}
           </Box>
         )}
-        ƒ
+
         {/* <Text py={4}>
           <LinkComponent href="examples">View examples</LinkComponent> to bootstrap development.
         </Text> */}
