@@ -9,10 +9,10 @@ contract StealthRegistry {
   ///  on behalf of the recipient.
   ///  The first mapping maps addresses the key 0 and 1, containing
   ///  the X and the Y coordinate of the public key.
-  mapping(address => mapping(uint256 => address)) keys;
+  mapping(address => mapping(uint256 => bytes)) keys;
 
   /// @dev Event emitted when a user updates their registered stealth keys
-  event StealthKeyRegistered(address indexed registrant, address spendPub, address viewPub);
+  event StealthKeyRegistered(address indexed registrant, bytes spendPub, bytes viewPub);
 
   error AlreadyRegistered();
 
@@ -23,8 +23,8 @@ contract StealthRegistry {
    * @param _spendPub The Spending public key msg.sender.
    * @param _viewPub The Viewing public key msg.sender.
    */
-  function registerKey(address _spendPub, address _viewPub) external {
-    if (keys[msg.sender][0] != address(0)) {
+  function registerKey(bytes memory _spendPub, bytes memory _viewPub) external {
+    if (compareBytes(keys[msg.sender][0], '')) {
       revert AlreadyRegistered();
     }
     keys[msg.sender][0] = _spendPub;
@@ -32,7 +32,11 @@ contract StealthRegistry {
     emit StealthKeyRegistered(msg.sender, _spendPub, _viewPub);
   }
 
-  function checkValidAndRegistered(address _spendPub, address _viewPub) external view returns (bool) {
-    return keys[msg.sender][0] == _spendPub && keys[msg.sender][1] == _viewPub;
+  function checkValidAndRegistered(bytes memory _spendPub, bytes memory _viewPub) external view returns (bool) {
+    return compareBytes(keys[msg.sender][0], _spendPub);
+  }
+
+  function compareBytes(bytes memory a, bytes memory b) internal pure returns (bool) {
+    return keccak256(a) == keccak256(b);
   }
 }
