@@ -3,7 +3,6 @@ import { Head } from 'components/layout/Head'
 import { HeadingComponent } from 'components/layout/HeadingComponent'
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
-import { SITE_DESCRIPTION } from 'utils/config'
 import { LocalStorageKey } from 'utils/localstorage'
 import { generateStealthMetaAddress } from 'utils/stealth/generateStealthAddress'
 import padToOneByte from 'utils/stealth/padToOneByte'
@@ -13,6 +12,7 @@ import stealthRegistryArtifact from '../../contracts/out/StealthRegistry.sol/Ste
 import stealthHandlerArtifact from '../../contracts/out/StealthHandler.sol/StealthHandler.json'
 import { stealthRegistry, stealthHandler } from '../utils/address'
 import { stealthHandlerContract } from 'utils/contracts'
+import { parseEther } from 'viem'
 
 export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
@@ -20,7 +20,7 @@ export default function Home() {
   const [ethAmount, setEthAmount] = useState('')
 
   const [col, setCol] = useState('red')
-
+  const [col2, setCol2] = useState('red')
 
   const [inputMetaAddr, setinputMetaAddr] = useState('')
   const [stealthMetaInfo, setStealthMetaInfo] = useState('')
@@ -67,6 +67,16 @@ export default function Home() {
     },
   })
 
+  const { data: ReadMapping2 } = useContractRead({
+    address: stealthRegistry,
+    abi: stealthRegistryArtifact.abi,
+    functionName: 'checkRegistered',
+    args: [address],
+    onSuccess(data) {
+      data ? setCol2('green') : setCol2('red')
+    },
+  })
+
   // const { data: tranferData, write: tranferWrite } = useContractRead({
   //   address: stealthHandler,
   //   abi: stealthHandlerArtifact.abi,
@@ -109,11 +119,15 @@ export default function Home() {
   async function onSendEth() {
     if (!ethAmount) return
 
-    const stealthMetaAddress = localStorage.getItem(LocalStorageKey.StealthMetaInfoAddress)
+    // const stealthMetaAddress = localStorage.getItem(LocalStorageKey.StealthMetaInfoAddress)
+
+    const stealthMetaAddress =
+      '0x030618da230776840f0014c59a267a75c928e4c22f759957db57cbd14d4d425e3d035e56eef185930b19bfd885e21f7a9c595dc63a00f1b677a2723dc65117ccfb16'
+
     if (!stealthMetaAddress) return
 
     try {
-      const stealthAddressInfo = generateStealthInfo(JSON.parse(stealthMetaAddress).stealthMetaAddress) as unknown as {
+      const stealthAddressInfo = generateStealthInfo(stealthMetaAddress) as unknown as {
         stealthAddress: string
         ephemeralPublicKey: string
         ViewTag: string
@@ -128,9 +142,14 @@ export default function Home() {
 
       vt = padToOneByte(vt)
 
-      const inputAmountWei = ethers.utils.parseEther(ethAmount)
+      // tranferWrite({
+      //   args: [sta, ephk, vt],
+      //   value: parseEther(ethAmount as `${number}`),
+      // })
 
-      await stealthHandlerContract.transferAndAnnounce(sta, ephk, vt, { value: inputAmountWei }).encodeABI()
+      // const inputAmountWei = ethers.utils.parseEther(ethAmount)
+
+      // await stealthHandlerContract.transferAndAnnounce(sta, ephk, vt, { value: inputAmountWei }).encodeABI()
     } catch (error) {
       console.log(error)
     }
@@ -143,7 +162,7 @@ export default function Home() {
       <Head />
 
       <main>
-        <HeadingComponent as="h2">{SITE_DESCRIPTION}</HeadingComponent>
+        {/* <HeadingComponent as="h2">{SITE_DESCRIPTION}</HeadingComponent> */}
         {!address && (
           <Box mx="auto" width={'50vw'} mt={8}>
             <Center>Please log in with your wallet 🪪</Center>
@@ -161,14 +180,16 @@ export default function Home() {
               </p>
             )}
 
-            <Button
-              onClick={() =>
-                write({
-                  args: [stealthMetaInfo.spendingPublicKey, stealthMetaInfo.viewingPublicKey],
-                })
-              }>
-              Register Stealth Meta Address to Registry
-            </Button>
+            {col2 === 'red' && (
+              <Button
+                onClick={() =>
+                  write({
+                    args: [stealthMetaInfo.spendingPublicKey, stealthMetaInfo.viewingPublicKey],
+                  })
+                }>
+                Register Stealth Meta Address to Registry
+              </Button>
+            )}
 
             {!stealthPin && (
               <Box alignSelf="center">
@@ -194,15 +215,21 @@ export default function Home() {
               </Box>
 
               <InputGroup mt={8}>
-                <Input type="text" borderColor={col} placeholder="Recipient Address" value={inputMetaAddr} onChange={(e) => setinputMetaAddr(e.target.value)} />
+                <Input
+                  type="text"
+                  borderColor={col}
+                  placeholder="Recipient Address"
+                  value={inputMetaAddr}
+                  onChange={(e) => setinputMetaAddr(e.target.value)}
+                />
               </InputGroup>
-              
+
               <InputGroup mt={2}>
                 <Input type="number" placeholder="Eth Amount" value={ethAmount} onChange={(e) => setEthAmount(e.target.value)} />
                 <InputRightAddon>ETH</InputRightAddon>
               </InputGroup>
               <Flex justifyContent={'space-between'} mt={4}>
-                <Button colorScheme="blue" onClick={onSendEth} disabled={(col !== 'green')}>
+                <Button colorScheme="blue" onClick={onSendEth} disabled={col !== 'green'}>
                   Send to Stealth Address
                 </Button>
               </Flex>
