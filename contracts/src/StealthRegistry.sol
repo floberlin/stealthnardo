@@ -40,6 +40,10 @@ contract StealthRegistry {
     return !compareBytes(keys[user][0], '');
   }
 
+   function getMeta(address user) external view returns (bytes memory, bytes memory) {
+    return (keys[user][0], keys[user][1]);
+  }
+
 
   function checkValidAndRegistered(bytes memory _spendPub) external view returns (bool) {
     return compareBytes(keys[msg.sender][0], _spendPub);

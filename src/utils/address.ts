@@ -1,4 +1,4 @@
-export const stealthMessenger = '0x39fb14f0b78e07e4e4b91357e1296dbc62bcb0c7'
-export const stealthEscrow = '0x5df8f9b7a2711eedb2a5fe5289468d0f6f59cbe4'
-export const stealthRegistry = '0xf6d1c9459b2806c3f72d8621c2cc45b0c13d034c'
-export const stealthHandler = '0x41d81a717a7c9617d9ab225c5ae2b6ab0a4a96b0'
+export const stealthMessenger = '0xff50dd1c91503764dced165c528497b181517976'
+export const stealthEscrow = '0x2dbc5f8dab3c886a6238b28cb485232f19dc8c0e'
+export const stealthRegistry = '0x3e23079170caeb67653e0e514a5b911193e61c70'
+export const stealthHandler = '0xf6e6ce97d2e1c9fc78e0973b72808b1f7c3eae72'

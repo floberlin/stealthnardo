@@ -10,6 +10,7 @@ import { useAccount, useContractRead, useContractWrite, useSignMessage, useWaitF
 import stealthHandlerArtifact from '../../contracts/out/StealthHandler.sol/StealthHandler.json'
 import stealthRegistryArtifact from '../../contracts/out/StealthRegistry.sol/StealthRegistry.json'
 import { stealthHandler, stealthRegistry } from '../utils/address'
+import { parseEther } from 'viem'
 
 export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
@@ -74,6 +75,14 @@ export default function Home() {
     },
   })
 
+  const { data: ReadMeta } = useContractRead({
+    address: stealthRegistry,
+    abi: stealthRegistryArtifact.abi,
+    functionName: 'getMeta',
+    args: [inputMetaAddr],
+    onSuccess(data) {},
+  })
+
   // const { data: tranferData, write: tranferWrite } = useContractRead({
   //   address: stealthHandler,
   //   abi: stealthHandlerArtifact.abi,
@@ -116,10 +125,7 @@ export default function Home() {
   async function onSendEth() {
     if (!ethAmount) return
 
-    // const stealthMetaAddress = localStorage.getItem(LocalStorageKey.StealthMetaInfoAddress)
-
-    const stealthMetaAddress =
-      '0x030618da230776840f0014c59a267a75c928e4c22f759957db57cbd14d4d425e3d035e56eef185930b19bfd885e21f7a9c595dc63a00f1b677a2723dc65117ccfb16'
+    const stealthMetaAddress = `st:eth:${(ReadMeta as unknown as any)[0]} + ${(ReadMeta as unknown as any)[1].slice(2, 9999)}`
 
     if (!stealthMetaAddress) return
 
@@ -139,10 +145,10 @@ export default function Home() {
 
       vt = padToOneByte(vt)
 
-      // tranferWrite({
-      //   args: [sta, ephk, vt],
-      //   value: parseEther(ethAmount as `${number}`),
-      // })
+      tranferWrite({
+        args: [sta, ephk, vt],
+        value: parseEther(ethAmount as `${number}`),
+      })
 
       // const inputAmountWei = ethers.utils.parseEther(ethAmount)
 
@@ -177,17 +183,6 @@ export default function Home() {
               </p>
             )}
 
-            {col2 === 'red' && (
-              <Button
-                onClick={() =>
-                  write({
-                    args: [stealthMetaInfo.spendingPublicKey, stealthMetaInfo.viewingPublicKey],
-                  })
-                }>
-                Register Stealth Meta Address to Registry
-              </Button>
-            )}
-
             {!stealthPin && (
               <Box alignSelf="center">
                 <Text>No setup found. Start with a pin but pls don&apos;t forget it 👀</Text>
@@ -200,6 +195,17 @@ export default function Home() {
                   Create your stealth meta address
                 </Button>
               </Box>
+            )}
+
+            {col2 === 'red' && (
+              <Button
+                onClick={() =>
+                  write({
+                    args: [stealthMetaInfo.spendingPublicKey, stealthMetaInfo.viewingPublicKey],
+                  })
+                }>
+                Register Stealth Meta Address to Registry
+              </Button>
             )}
 
             <Box mx="auto" width={'50vw'} mt={8} margin={''}>
