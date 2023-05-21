@@ -1,0 +1,21 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "src/maybeTrash/StealthnardoRegistry.sol",
+    "id": 29783,
+    "exportedSymbols": {},
+    "nodeType": "SourceUnit",
+    "src": "3450:0:22",
+    "nodes": [],
+    "license": "UNLICENSED"
+  },
+  "id": 22
+}
