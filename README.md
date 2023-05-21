@@ -1,6 +1,6 @@
 # StealthSend
 
-![StealthSend]([https://i.ibb.co/1JcnHbY/logo.png])
+![StealthSend](https://i.ibb.co/1JcnHbY/logo.png)
 
 # What is StealthSend?
 
