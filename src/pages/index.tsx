@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Input, InputGroup, InputRightAddon, Text } from '@chakra-ui/react'
+import { Box, Button, Center, Flex, Input, InputGroup, InputRightAddon, Text, useColorModeValue } from '@chakra-ui/react'
 import { Head } from 'components/layout/Head'
 import { useEffect, useState } from 'react'
 import { LocalStorageKey } from 'utils/localstorage'
@@ -11,6 +11,8 @@ import stealthHandlerArtifact from '../../contracts/out/StealthHandler.sol/Steal
 import stealthRegistryArtifact from '../../contracts/out/StealthRegistry.sol/StealthRegistry.json'
 import { stealthHandler, stealthRegistry } from '../utils/address'
 import { parseEther } from 'viem'
+import { stealthMessengerContract } from 'utils/contracts'
+import { SITE_URL } from 'utils/config'
 
 export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
@@ -22,6 +24,7 @@ export default function Home() {
 
   const [inputMetaAddr, setinputMetaAddr] = useState('')
   const [stealthMetaInfo, setStealthMetaInfo] = useState<any>()
+  const [announcements, setAnnouncements] = useState([])
 
   const { address } = useAccount()
   const { data: walletClient } = useWalletClient()
@@ -158,6 +161,36 @@ export default function Home() {
     }
   }
 
+  async function parseForAnnouncements() {
+    // call 'trusted' api for announcements
+    // const response = await fetch(`${SITE_URL}/api/parseAnnouncements`, {
+    //   method: 'POST',
+    //   body: JSON.stringify({
+    //     viewingPublicKey: stealthMetaInfo.viewingPublicKey,
+    //     spendingPublicKey: stealthMetaInfo.spendingPublicKey,
+    //     viewingPrivateKey: stealthMetaInfo.viewingPrivateKey,
+    //     spendingPrivateKey: stealthMetaInfo.spendingPrivateKey
+    //   })
+    // }
+    // )
+
+    // const data = await response.json()
+    const data = [
+      {
+        'Stealth Address': '0x1b5485ea1f250a74473e648ddd58e6e024004361',
+        Announcement: '0x0257fec6bbe4ddb7c848acc80603238b3e1ba48cb7adf421139b773a576bcb511d',
+        Metadata: '0x53',
+      },
+      {
+        'Stealth Address': '0x5ba3a1b5485eabzaa74473dd58e6e0240012613b',
+        Announcement: '0xab21a0ec6bbe4ddb7c848acc80603238b3e1ba48cb7adf421139b773a576bcbeca2',
+        Metadata: '0x31',
+      },
+    ]
+
+    setAnnouncements(data as any)
+  }
+
   console.log('ReadMapping', ReadMapping)
 
   return (
@@ -178,9 +211,67 @@ export default function Home() {
             </Box>
 
             {stealthPin && (
-              <p>
-                Your stealth meta address is: <b>{stealthMetaInfo}</b>
-              </p>
+              <>
+                <p>
+                  Your stealth meta address is: <b>{stealthMetaInfo.stealthMetaAddress}</b>
+                </p>
+                <Box my={4}>
+                  ⬆️ This meta address related to the following keys ⬇️
+                  <Flex
+                    direction={'column'}
+                    border={'2px solid black'}
+                    borderRadius={'lg'}
+                    p={2}
+                    my={4}
+                    borderColor={useColorModeValue('gray.100', 'gray.900')}>
+                    <Box>
+                      <Text>Private:</Text>
+
+                      <Text fontSize={'xs'}>Spending: 0x5d0407bfd1761a5670e0ff55a69b870946e9fca10eaaea627117317621e8f2f2</Text>
+                      <Text fontSize={'xs'}>Viewing: 0xb051fe032023db1c13aeb5264cf2d25dd2ee7622ee70a0ad71bbe4f4f656c09c</Text>
+                    </Box>
+                    <Box>
+                      <Text>Public:</Text>
+
+                      <Text fontSize={'xs'}>Spending: 0x03af60115fc5daa7e2530bf5d540cf39674739ef4aa068b74004dc1c790a8704e3</Text>
+                      <Text fontSize={'xs'}>Viewing: 0x02d7e855f5ba91431f9a3ee9327892082b71a51811e22f7afed3322bd1c7ff6799</Text>
+                    </Box>
+                  </Flex>
+                </Box>
+              </>
+            )}
+
+            {col2 === 'red' && (
+              <Button
+                onClick={() =>
+                  write({
+                    args: [stealthMetaInfo.spendingPublicKey, stealthMetaInfo.viewingPublicKey],
+                  })
+                }>
+                Register Stealth Meta Address to Registry
+              </Button>
+            )}
+
+            <Box mt={4}>
+              <Button onClick={() => parseForAnnouncements()}>Parse for Announcements</Button>
+            </Box>
+
+            {announcements.length > 0 && (
+              <Box mt={4} border={'2px solid black'} borderRadius={'lg'} p={2} my={4} borderColor={useColorModeValue('gray.100', 'gray.900')}>
+                <Text>Found announcements</Text>
+
+                {announcements.length > 0 &&
+                  announcements.map((a) => {
+                    return (
+                      <Flex key={a.Announcement} alignItems={'center'} my={2}>
+                        <p>{a['Stealth Address']}</p>
+                        <Button ml={4} size="sm">
+                          Get Private Key
+                        </Button>
+                      </Flex>
+                    )
+                  })}
+              </Box>
             )}
 
             {!stealthPin && (
@@ -195,17 +286,6 @@ export default function Home() {
                   Create your stealth meta address
                 </Button>
               </Box>
-            )}
-
-            {col2 === 'red' && (
-              <Button
-                onClick={() =>
-                  write({
-                    args: [stealthMetaInfo.spendingPublicKey, stealthMetaInfo.viewingPublicKey],
-                  })
-                }>
-                Register Stealth Meta Address to Registry
-              </Button>
             )}
 
             <Box mx="auto" width={'50vw'} mt={8} margin={''}>

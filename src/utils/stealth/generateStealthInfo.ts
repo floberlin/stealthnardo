@@ -1,6 +1,5 @@
-// @ts-nocheck
 import keccak256 from 'js-sha3'
-import secp from '@noble/secp256k1'
+import { getPublicKey, getSharedSecret, ProjectivePoint } from '@noble/secp256k1'
 import randomPrivateKey from './randomPrivateKey'
 import toEthAddress from './toEthAddress'
 
@@ -12,20 +11,20 @@ export default function generateStealthInfo(stealthMetaAddress: string) {
     throw 'Wrong address format; Address must start with `st:eth:0x...`'
   }
 
-  const R_pubkey_spend = secp.Point.fromHex(USER.slice(9, 75))
+  const R_pubkey_spend = ProjectivePoint.fromHex(USER.slice(9, 75))
   //console.log('R_pubkey_spend:', R_pubkey_spend);
 
-  const R_pubkey_view = secp.Point.fromHex(USER.slice(75))
+  const R_pubkey_view = ProjectivePoint.fromHex(USER.slice(75))
 
   //  const randomInt = BigInt(`0x${hexString}`);
 
   const ephemeralPrivateKey = randomPrivateKey()
   //console.log('ephemeralPrivateKey:', "0x" + ephemeralPrivateKey.toString(16));
 
-  const ephemeralPublicKey = secp.getPublicKey(ephemeralPrivateKey, (isCompressed = true))
+  const ephemeralPublicKey = getPublicKey(ephemeralPrivateKey, true)
   //console.log('ephemeralPublicKey:', Buffer.from(ephemeralPublicKey).toString('hex'));
 
-  const sharedSecret = secp.getSharedSecret(ephemeralPrivateKey, R_pubkey_view)
+  const sharedSecret = getSharedSecret(ephemeralPrivateKey, R_pubkey_view)
   //console.log('sharedSecret:', sharedSecret);
 
   var hashedSharedSecret = keccak256.keccak256(Buffer.from(sharedSecret.slice(1)))
@@ -33,7 +32,7 @@ export default function generateStealthInfo(stealthMetaAddress: string) {
 
   var ViewTag = hashedSharedSecret.slice(0, 2)
   //console.log('View tag:', ViewTag.toString('hex'));
-  const hashedSharedSecretPoint = secp.Point.fromPrivateKey(Buffer.from(hashedSharedSecret, 'hex'))
+  const hashedSharedSecretPoint = ProjectivePoint.fromPrivateKey(Buffer.from(hashedSharedSecret, 'hex'))
   //console.log('hashedSharedSecretPoint1:', hashedSharedSecretPoint);
   const stealthPublicKey = R_pubkey_spend.add(hashedSharedSecretPoint)
   //console.log("stealthPublicKey.toHex(): ", stealthPublicKey.toHex());
