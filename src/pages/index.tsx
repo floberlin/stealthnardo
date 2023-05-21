@@ -261,10 +261,10 @@ export default function Home() {
                 <Text>Found announcements</Text>
 
                 {announcements.length > 0 &&
-                  announcements.map((a) => {
+                  announcements.map((a: any) => {
                     return (
-                      <Flex key={a.Announcement} alignItems={'center'} my={2}>
-                        <p>{a['Stealth Address']}</p>
+                      <Flex key={a.Announcement as string} alignItems={'center'} my={2}>
+                        <p>{a['Stealth Address'] as string}</p>
                         <Button ml={4} size="sm">
                           Get Private Key
                         </Button>

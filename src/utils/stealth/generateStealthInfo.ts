@@ -1,3 +1,4 @@
+// @ts-nocheck
 import keccak256 from 'js-sha3'
 import { getPublicKey, getSharedSecret, ProjectivePoint } from '@noble/secp256k1'
 import randomPrivateKey from './randomPrivateKey'
