@@ -24,7 +24,10 @@ contract StealthRegistry {
    * @param _viewPub The Viewing public key msg.sender.
    */
   function registerKey(bytes memory _spendPub, bytes memory _viewPub) external {
-    if (compareBytes(keys[msg.sender][0], '')) {
+    if (compareBytes(keys[msg.sender][0], _spendPub)) {
+      revert AlreadyRegistered();
+    }
+    if (!compareBytes(keys[msg.sender][0], '')) {
       revert AlreadyRegistered();
     }
     keys[msg.sender][0] = _spendPub;
@@ -32,7 +35,13 @@ contract StealthRegistry {
     emit StealthKeyRegistered(msg.sender, _spendPub, _viewPub);
   }
 
-  function checkValidAndRegistered(bytes memory _spendPub, bytes memory _viewPub) external view returns (bool) {
+
+  function checkRegistered(address user) external view returns (bool) {
+    return !compareBytes(keys[user][0], '');
+  }
+
+
+  function checkValidAndRegistered(bytes memory _spendPub) external view returns (bool) {
     return compareBytes(keys[msg.sender][0], _spendPub);
   }
 

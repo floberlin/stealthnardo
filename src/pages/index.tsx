@@ -7,14 +7,20 @@ import { stealthRegistryContract } from 'utils/contracts'
 import { LocalStorageKey } from 'utils/localstorage'
 import { generateStealthMetaAddress } from 'utils/stealth/generateStealthAddress'
 import { utf8ToHex } from 'utils/stealth/utf8ToHex'
-import { useAccount, useContractWrite, usePrepareContractWrite, useSignMessage, useWaitForTransaction, useWalletClient } from 'wagmi'
-import stealthRegistryArtifact from '../../contracts/out/StealthnardoRegistry.sol/StealthRegistry.json'
-import { stealthRegistry } from '../utils/address'
+import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useSignMessage, useWaitForTransaction, useWalletClient } from 'wagmi'
+import stealthRegistryArtifact from '../../contracts/out/StealthRegistry.sol/StealthRegistry.json'
+import stealthHandlerArtifact from '../../contracts/out/StealthHandler.sol/StealthHandler.json'
+import { stealthRegistry, stealthHandler } from '../utils/address'
 
 export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
   const [pinInput, setPinInput] = useState('')
   const [ethAmount, setEthAmount] = useState('')
+
+  const [col, setCol] = useState('red')
+
+
+  const [inputMetaAddr, setinputMetaAddr] = useState('')
   const [stealthMetaInfo, setStealthMetaInfo] = useState('')
 
   const { address } = useAccount()
@@ -39,13 +45,33 @@ export default function Home() {
     hash: data?.hash,
   })
 
-  // const { data:regData, write:regWrite  } = useContractWrite({
-  //   address: stealthRegistry,
-  //   abi: stealthRegistryArtifact.abi,
-  //   functionName: 'registerKey',
+  const { data: tranferData, write: tranferWrite } = useContractWrite({
+    address: stealthHandler,
+    abi: stealthHandlerArtifact.abi,
+    functionName: 'transferAndAnnounce',
+  })
+  if (data?.hash) console.log(data.hash)
+  const { isLoading: isLoad, isSuccess: isSuc } = useWaitForTransaction({
+    hash: data?.hash,
+  })
+
+  const { data: ReadMapping } = useContractRead({
+    address: stealthRegistry,
+    abi: stealthRegistryArtifact.abi,
+    functionName: 'checkRegistered',
+    args: [inputMetaAddr],
+    onSuccess(data) {
+      data ? setCol('green') : setCol('red')
+    },
+  })
+
+  // const { data: tranferData, write: tranferWrite } = useContractRead({
+  //   address: stealthHandler,
+  //   abi: stealthHandlerArtifact.abi,
+  //   functionName: 'transferAndAnnounce',
   // })
   // if (data?.hash) console.log(data.hash)
-  // const { isLoading, isSuccess } = useWaitForTransaction({
+  // const { isLoading: isLoad, isSuccess: isSuc } = useWaitForTransaction({
   //   hash: data?.hash,
   // })
 
@@ -81,8 +107,14 @@ export default function Home() {
   function onAnonEth() {
     if (!ethAmount) return
 
+    tranferWrite({
+      args: [ethAmount],
+    })
+
     console.log('NOT IMPLEMENTED')
   }
+
+  console.log('ReadMapping', ReadMapping)
 
   return (
     <>
@@ -140,12 +172,16 @@ export default function Home() {
               </Box>
 
               <InputGroup mt={8}>
+                <Input type="text" borderColor={col} placeholder="Recipient Address" value={inputMetaAddr} onChange={(e) => setinputMetaAddr(e.target.value)} />
+              </InputGroup>
+              
+              <InputGroup mt={2}>
                 <Input type="number" placeholder="Eth Amount" value={ethAmount} onChange={(e) => setEthAmount(e.target.value)} />
                 <InputRightAddon>ETH</InputRightAddon>
               </InputGroup>
               <Flex justifyContent={'space-between'} mt={4}>
-                <Button colorScheme="blue" onClick={onAnonEth}>
-                  Anonymize Eth
+                <Button colorScheme="blue" onClick={onAnonEth} disabled={(col !== 'green')}>
+                  Send to Stealth Address
                 </Button>
               </Flex>
             </Box>
