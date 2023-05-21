@@ -1,16 +1,18 @@
 import { Box, Button, Center, Flex, Input, InputGroup, InputRightAddon, Text } from '@chakra-ui/react'
 import { Head } from 'components/layout/Head'
 import { HeadingComponent } from 'components/layout/HeadingComponent'
+import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import { SITE_DESCRIPTION } from 'utils/config'
-import { stealthRegistryContract } from 'utils/contracts'
 import { LocalStorageKey } from 'utils/localstorage'
 import { generateStealthMetaAddress } from 'utils/stealth/generateStealthAddress'
+import padToOneByte from 'utils/stealth/padToOneByte'
 import { utf8ToHex } from 'utils/stealth/utf8ToHex'
-import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useSignMessage, useWaitForTransaction, useWalletClient } from 'wagmi'
+import { useAccount, useContractRead, useContractWrite, useSignMessage, useWaitForTransaction, useWalletClient } from 'wagmi'
 import stealthRegistryArtifact from '../../contracts/out/StealthRegistry.sol/StealthRegistry.json'
 import stealthHandlerArtifact from '../../contracts/out/StealthHandler.sol/StealthHandler.json'
 import { stealthRegistry, stealthHandler } from '../utils/address'
+import { stealthHandlerContract } from 'utils/contracts'
 
 export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
@@ -104,14 +106,34 @@ export default function Home() {
     setPinInput('')
   }
 
-  function onAnonEth() {
+  async function onSendEth() {
     if (!ethAmount) return
 
-    tranferWrite({
-      args: [ethAmount],
-    })
+    const stealthMetaAddress = localStorage.getItem(LocalStorageKey.StealthMetaInfoAddress)
+    if (!stealthMetaAddress) return
 
-    console.log('NOT IMPLEMENTED')
+    try {
+      const stealthAddressInfo = generateStealthInfo(JSON.parse(stealthMetaAddress).stealthMetaAddress) as unknown as {
+        stealthAddress: string
+        ephemeralPublicKey: string
+        ViewTag: string
+        HashedSecret: string
+      }
+      console.log(stealthAddressInfo)
+
+      const sta = stealthAddressInfo['stealthAddress']
+      const ephk = stealthAddressInfo['ephemeralPublicKey']
+      let vt = stealthAddressInfo['ViewTag']
+      const hs = stealthAddressInfo['HashedSecret']
+
+      vt = padToOneByte(vt)
+
+      const inputAmountWei = ethers.utils.parseEther(ethAmount)
+
+      await stealthHandlerContract.transferAndAnnounce(sta, ephk, vt, { value: inputAmountWei }).encodeABI()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   console.log('ReadMapping', ReadMapping)
@@ -180,7 +202,7 @@ export default function Home() {
                 <InputRightAddon>ETH</InputRightAddon>
               </InputGroup>
               <Flex justifyContent={'space-between'} mt={4}>
-                <Button colorScheme="blue" onClick={onAnonEth} disabled={(col !== 'green')}>
+                <Button colorScheme="blue" onClick={onSendEth} disabled={(col !== 'green')}>
                   Send to Stealth Address
                 </Button>
               </Flex>
@@ -194,4 +216,7 @@ export default function Home() {
       </main>
     </>
   )
+}
+function generateStealthInfo(inputStealthMetaAddress: any) {
+  throw new Error('Function not implemented.')
 }

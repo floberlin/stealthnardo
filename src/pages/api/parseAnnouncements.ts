@@ -9,8 +9,8 @@ const fromBlock = 2285931 // contract deployment
 const toBlock = 'latest'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { providedEmphemeralKey, spendingPublicKey, viewingPrivateKey, spendingPrivateKey } = req.body
-  if (!providedEmphemeralKey || !spendingPublicKey || !viewingPrivateKey || !spendingPrivateKey) {
+  const { viewingPublicKey, spendingPublicKey, viewingPrivateKey, spendingPrivateKey } = req.body
+  if (!viewingPublicKey || !spendingPublicKey || !viewingPrivateKey || !spendingPrivateKey) {
     res.status(400).json({ message: 'Missing required fields' })
     return
   }
@@ -19,11 +19,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     .connect(new ethers.providers.JsonRpcProvider(SCROLL_CHAIN.rpcUrls.default.http[0]))
     .queryFilter('Announcement', fromBlock, toBlock)
 
+  const foundAnnouncements = []
   for (const event of events) {
-    parseAnnouncement(providedEmphemeralKey, spendingPublicKey, viewingPrivateKey, spendingPrivateKey)
+    const success = parseAnnouncement(viewingPublicKey, spendingPublicKey, viewingPrivateKey, spendingPrivateKey)
+
+    if (success) {
+      foundAnnouncements.push(event)
+    }
   }
 
-  res.status(200).json({ name: 'John Doe' })
+  res.status(200).json({ events: foundAnnouncements })
 }
 
 function parseAnnouncement(providedEmphemeralKey: string, spendingPublicKey: string, viewingPrivateKey: string, spendingPrivateKey: string) {
