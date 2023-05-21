@@ -1,18 +1,15 @@
 import { Box, Button, Center, Flex, Input, InputGroup, InputRightAddon, Text } from '@chakra-ui/react'
 import { Head } from 'components/layout/Head'
-import { HeadingComponent } from 'components/layout/HeadingComponent'
-import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import { LocalStorageKey } from 'utils/localstorage'
 import { generateStealthMetaAddress } from 'utils/stealth/generateStealthAddress'
+import generateStealthInfo from 'utils/stealth/generateStealthInfo'
 import padToOneByte from 'utils/stealth/padToOneByte'
 import { utf8ToHex } from 'utils/stealth/utf8ToHex'
 import { useAccount, useContractRead, useContractWrite, useSignMessage, useWaitForTransaction, useWalletClient } from 'wagmi'
-import stealthRegistryArtifact from '../../contracts/out/StealthRegistry.sol/StealthRegistry.json'
 import stealthHandlerArtifact from '../../contracts/out/StealthHandler.sol/StealthHandler.json'
-import { stealthRegistry, stealthHandler } from '../utils/address'
-import { stealthHandlerContract } from 'utils/contracts'
-import { parseEther } from 'viem'
+import stealthRegistryArtifact from '../../contracts/out/StealthRegistry.sol/StealthRegistry.json'
+import { stealthHandler, stealthRegistry } from '../utils/address'
 
 export default function Home() {
   const [stealthPin, setStealthPin] = useState('')
