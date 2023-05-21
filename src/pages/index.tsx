@@ -244,6 +244,3 @@ export default function Home() {
     </>
   )
 }
-function generateStealthInfo(inputStealthMetaAddress: any) {
-  throw new Error('Function not implemented.')
-}
